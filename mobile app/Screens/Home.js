@@ -1,5 +1,5 @@
 import React, { Component , useState} from 'react'
-import {View, Text, Button} from 'react-native'
+import {View, Text, Button, ScrollView,FlatList,ListItem} from 'react-native'
 
 export default function Home () {
     const [boxes, setBoxes] = useState([]);
@@ -14,6 +14,7 @@ export default function Home () {
   
     return (
       <View>
+        <ScrollView>  
         <View
           style={{
             marginTop: 100,
@@ -27,6 +28,7 @@ export default function Home () {
           })}
         </View>
         <Button title="add" onPress={addHandler}></Button>
+        </ScrollView>
       </View>
     );
   }
