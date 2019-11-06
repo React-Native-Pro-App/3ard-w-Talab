@@ -1,17 +1,45 @@
 import React, { Component } from "react";
-import { View, Text, Button, TextInput , StyleSheet,  TouchableHighlight } from "react-native";
+import { View, Text, ScrollView, TextInput , StyleSheet,TouchableOpacity,Button } from "react-native";
 import NavigationScreen from "./../NavigationScreen";
+import Modal from "react-native-modal";
+import SignUp from './SignUp'
 export default class App extends Component {
   state = {
-    isLoggedIn: false
+    isLoggedIn: false,
+    email: '',
+    password : '',
+    isVisible : false
   };
-  AuthHandler = (event) => {
-    console.log(event.target.name);
-    console.log(event.nativeEvent.text);
+  AuthHandler = (event, name) => {
+    const regexEmail = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/
+    const regexPassword = /^[0-9a-zA-Z]{8,}$/
+    if (regexEmail.test(event.nativeEvent.text) && name === 'email'){    
     this.setState({
-      isLoggedIn: true
+      [name] : event.nativeEvent.text
+    })
+  }
+ else if(regexPassword.test(event.nativeEvent.text) && name === 'password'){
+    this.setState({
+      [name] : event.nativeEvent.text
+    })
+  }
+ else if(name === 'submit'){
+    if(this.state.email !== '' && this.state.password !==  ''){
+      this.setState({
+        isLoggedIn: true
     });
-  };
+    }
+    else{
+      alert('something went wrong')
+    }
+  }
+};
+  isModalVisibleHandler=(isVisible,isLoggedIn)=>{
+   this.setState({
+    isVisible : isVisible,
+    isLoggedIn : isLoggedIn
+   })
+  }
   render() {
     if(this.state.isLoggedIn){
       return (
@@ -20,14 +48,29 @@ export default class App extends Component {
     }else
     return (
       <>
+          <ScrollView>
           <View style={styles.body}>
-            <TextInput name="email" style={styles.input} placeholder="  Phone number or Email Address" textContentType="emailAddress"  onChange={this.AuthHandler}></TextInput>
-            <TextInput name="password" style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true} onChange={this.AuthHandler} ></TextInput>
-         <View style={styles.button} >
-         <Button  color='white' title="Auth" onPress={this.AuthHandler}></Button>
-            </View>
-            {/* TouchableHighlight */}
-          </View>
+            <TextInput style={styles.input} placeholder="  Phone number or Email Address" textContentType="emailAddress" onChange={(event)=>this.AuthHandler(event,'email')}></TextInput>
+            <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChange={(event) => this.AuthHandler(event,'password')} ></TextInput>
+            <TouchableOpacity style={styles.buttonContainer} onPress={(event)=>this.AuthHandler(event,'submit')}>
+                <Text style={{color:'white',fontWeight:'bold'}}>Sign in</Text>  
+              </TouchableOpacity>  
+              </View>
+              <View style={styles.signUp}>
+              <View style={{flex:1,flexDirection:'row'}}>
+              <View style={{height:2, backgroundColor: 'gray' , width:40+'%'}}></View>
+              <Text style={{marginTop:-10}}>OR</Text>
+              <View style={{height:2, backgroundColor: 'gray' , width:40+'%'}}></View>
+              </View>
+              <TouchableOpacity style={styles.buttonContainerTwo} onPress={()=>this.setState({isVisible:true})}>
+                <Text style={{color:'#4280c8',fontWeight:'bold'}}>Sign up</Text>  
+              </TouchableOpacity>  
+              </View>
+              <Modal isVisible={this.state.isVisible}>
+                  <SignUp isVisibleHandler={this.isModalVisibleHandler}></SignUp>
+             </Modal>
+     
+          </ScrollView>
       </>
     );
   }
@@ -49,11 +92,31 @@ const styles = StyleSheet.create({
       borderRadius : 2,
       marginTop :-1
     },
-    button :{ 
-      width : 90+'%',
-      height : 45,
-      marginTop : 10,
-      backgroundColor : '#72A0F0',
-      borderRadius : 7
+        buttonContainer: {
+          marginTop:10,
+          height:45,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom:20,
+          width:'90%',
+          borderRadius:10,
+          backgroundColor: "#00BFFF",
+        },
+        buttonContainerTwo: {
+          marginTop:10,
+          height:45,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom:20,
+          width:'90%',
+          borderRadius:10,
+          backgroundColor: "#cbdcf0",
+        },
+        signUp:{
+          marginTop:45+'%',
+          flexDirection:'column',
+          alignItems:'center'
         }
 })
