@@ -36,7 +36,7 @@ export default class SignUp extends Component {
     }
     else{
       this.setState({
-        [name] : event
+        [name] : ''
       })
     }
     }
