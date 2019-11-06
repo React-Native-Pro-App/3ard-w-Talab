@@ -71,8 +71,8 @@ export default class App extends Component {
                 <Text style={{color:'#4280c8',fontWeight:'bold'}}>Sign up</Text>  
               </TouchableOpacity>  
               </View>
-              <Modal isVisible={this.state.isVisible}> {/* true of false */}
-                  <SignUp isVisibleHandler={this.isModalVisibleHandler}></SignUp> {/* drilling */}
+              <Modal isVisible={this.state.isVisible}> 
+                  <SignUp isVisibleHandler={this.isModalVisibleHandler}></SignUp> 
              </Modal>
      
           </ScrollView>
