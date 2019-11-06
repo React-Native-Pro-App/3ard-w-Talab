@@ -12,18 +12,18 @@ export default class SignUp extends Component {
         const regexPassword = /^[0-9a-zA-Z]{8,}$/
          if(name === 'name'){
             this.setState({
-                [name] : event.nativeEvent.text
+                [name] : event
             })
         }
 
-        else if (regexEmail.test(event.nativeEvent.text) && name === 'email'){    
+        else if (regexEmail.test(event) && name === 'email'){    
         this.setState({
-          [name] : event.nativeEvent.text
+          [name] : event
         })
       }
-         else if(regexPassword.test(event.nativeEvent.text) && name === 'password'){
+         else if(regexPassword.test(event) && name === 'password'){
         this.setState({
-          [name] : event.nativeEvent.text
+          [name] : event
         })
       }
          else if(name === 'submit'){
@@ -36,7 +36,7 @@ export default class SignUp extends Component {
     }
     else{
       this.setState({
-        [name] : event.nativeEvent.text
+        [name] : event
       })
     }
     }
@@ -52,9 +52,9 @@ export default class SignUp extends Component {
                   </View>
                 <View style={styles.bodyContent}>
                 <Text style={{fontSize:27,marginBottom:50}}>Sign up</Text>
-                <TextInput style={styles.input} placeholder="  Full name" textContentType="emailAddress" onChange={(event)=>this.signUpHandler(event,'name')}></TextInput>
-                <TextInput style={styles.input} placeholder="  Email Address" textContentType="emailAddress" onChange={(event)=>this.signUpHandler(event,'email')}></TextInput>
-                <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChange={(event) => this.signUpHandler(event,'password')} ></TextInput>
+                <TextInput style={styles.input} placeholder="  Full name" textContentType="emailAddress" onChangeText={(event)=>this.signUpHandler(event,'name')}></TextInput>
+                <TextInput style={styles.input} placeholder="  Email Address" textContentType="emailAddress" onChangeText={(event)=>this.signUpHandler(event,'email')}></TextInput>
+                <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChangeText={(event) => this.signUpHandler(event,'password')} ></TextInput>
                 <TouchableOpacity style={styles.buttonContainer} onPress={(event) => this.signUpHandler(event,'submit')}>
                     <Text style={{color:'white',fontWeight:'bold'}}>Submit</Text>  
                 </TouchableOpacity>

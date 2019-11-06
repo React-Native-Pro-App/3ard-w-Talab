@@ -13,14 +13,14 @@ export default class App extends Component {
   AuthHandler = (event, name) => {
     const regexEmail = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/
     const regexPassword = /^[0-9a-zA-Z]{8,}$/
-    if (regexEmail.test(event.nativeEvent.text) && name === 'email'){    
+    if (regexEmail.test(event) && name === 'email'){    
     this.setState({
-      [name] : event.nativeEvent.text
+      [name] : event
     })
   }
- else if(regexPassword.test(event.nativeEvent.text) && name === 'password'){
+ else if(regexPassword.test(event) && name === 'password'){
     this.setState({
-      [name] : event.nativeEvent.text
+      [name] : event
     })
   }
  else if(name === 'submit'){
@@ -35,7 +35,7 @@ export default class App extends Component {
   }
   else{
     this.setState({
-      [name] : event.nativeEvent.text
+      [name] : event
     })
   }
 };
@@ -55,8 +55,8 @@ export default class App extends Component {
       <>
           <ScrollView>
           <View style={styles.body}>
-            <TextInput style={styles.input} placeholder="  Email Address" textContentType="emailAddress" onChange={(event)=>this.AuthHandler(event,'email')}></TextInput>
-            <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChange={(event) => this.AuthHandler(event,'password')} ></TextInput>
+            <TextInput style={styles.input} placeholder="  Email Address" textContentType="emailAddress" onChangeText={(event)=>this.AuthHandler(event,'email')}></TextInput>
+            <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChangeText={(event) => this.AuthHandler(event,'password')} ></TextInput>
             <TouchableOpacity style={styles.buttonContainer} onPress={(event)=>this.AuthHandler(event,'submit')}>
                 <Text style={{color:'white',fontWeight:'bold'}}>Sign in</Text>  
               </TouchableOpacity>  
