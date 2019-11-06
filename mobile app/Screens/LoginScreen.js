@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Button, TextInput , StyleSheet } from "react-native";
+import { View, Text, Button, TextInput , StyleSheet,  TouchableHighlight } from "react-native";
 import NavigationScreen from "./../NavigationScreen";
 export default class App extends Component {
   state = {
@@ -13,17 +13,21 @@ export default class App extends Component {
     });
   };
   render() {
+    if(this.state.isLoggedIn){
+      return (
+        <NavigationScreen />
+      )
+    }else
     return (
       <>
-        {this.state.isLoggedIn ? (
-          <NavigationScreen />
-        ) : (
           <View style={styles.body}>
             <TextInput name="email" style={styles.input} placeholder="  Phone number or Email Address" textContentType="emailAddress"  onChange={this.AuthHandler}></TextInput>
             <TextInput name="password" style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true} onChange={this.AuthHandler} ></TextInput>
-            <Button title="Auth" onPress={this.AuthHandler}></Button>
+         <View style={styles.button} >
+         <Button  color='white' title="Auth" onPress={this.AuthHandler}></Button>
+            </View>
+            {/* TouchableHighlight */}
           </View>
-        )}
       </>
     );
   }
@@ -31,17 +35,25 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
     body:{
-      marginTop: 50+'%',
+      marginTop: 60+'%',
       flexDirection : 'column',
       alignItems: 'center'
     },
     input :{
-      textAlignVertical:100,
       lineHeight : 10,
       borderStyle : 'solid',
       borderWidth : 1,
       borderColor : 'gray',
       width : '90%',
-      height : 50
-    }
+      height : 50,
+      borderRadius : 2,
+      marginTop :-1
+    },
+    button :{ 
+      width : 90+'%',
+      height : 45,
+      marginTop : 10,
+      backgroundColor : '#72A0F0',
+      borderRadius : 7
+        }
 })
