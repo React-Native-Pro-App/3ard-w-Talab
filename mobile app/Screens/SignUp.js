@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {View,Text,StyleSheet,TouchableOpacity,TextInput} from 'react-native'
+import {View,Text,StyleSheet,TouchableOpacity,TextInput,ScrollView} from 'react-native'
 
 export default class SignUp extends Component {
     state={
@@ -42,6 +42,8 @@ export default class SignUp extends Component {
     }
     render() {
         return (
+          <ScrollView>
+
           <View style={styles.container}>
           <View style={{flexDirection:'row-reverse'}} >
             <TouchableOpacity style={styles.backButton} onPress={this.props.isVisibleHandler.bind(this,false,false)}>
@@ -58,6 +60,8 @@ export default class SignUp extends Component {
                 </TouchableOpacity>
                 </View>
           </View>
+          </ScrollView>
+
         );
       }
     }
