@@ -34,6 +34,11 @@ export default class SignUp extends Component {
             alert('something went wrong')
           }
     }
+    else{
+      this.setState({
+        [name] : event.nativeEvent.text
+      })
+    }
     }
     render() {
         return (
@@ -46,7 +51,7 @@ export default class SignUp extends Component {
                 <View style={styles.bodyContent}>
                 <Text style={{fontSize:27,marginBottom:50}}>Sign up</Text>
                 <TextInput style={styles.input} placeholder="  Full name" textContentType="emailAddress" onChange={(event)=>this.signUpHandler(event,'name')}></TextInput>
-                <TextInput style={styles.input} placeholder="  Phone number or Email Address" textContentType="emailAddress" onChange={(event)=>this.signUpHandler(event,'email')}></TextInput>
+                <TextInput style={styles.input} placeholder="  Email Address" textContentType="emailAddress" onChange={(event)=>this.signUpHandler(event,'email')}></TextInput>
                 <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChange={(event) => this.signUpHandler(event,'password')} ></TextInput>
                 <TouchableOpacity style={styles.buttonContainer} onPress={(event) => this.signUpHandler(event,'submit')}>
                     <Text style={{color:'white',fontWeight:'bold'}}>Submit</Text>  

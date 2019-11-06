@@ -33,6 +33,11 @@ export default class App extends Component {
       alert('something went wrong')
     }
   }
+  else{
+    this.setState({
+      [name] : event.nativeEvent.text
+    })
+  }
 };
   isModalVisibleHandler=(isVisible,isLoggedIn)=>{
    this.setState({
@@ -50,7 +55,7 @@ export default class App extends Component {
       <>
           <ScrollView>
           <View style={styles.body}>
-            <TextInput style={styles.input} placeholder="  Phone number or Email Address" textContentType="emailAddress" onChange={(event)=>this.AuthHandler(event,'email')}></TextInput>
+            <TextInput style={styles.input} placeholder="  Email Address" textContentType="emailAddress" onChange={(event)=>this.AuthHandler(event,'email')}></TextInput>
             <TextInput style={styles.input} placeholder="  Password" textContentType='password' secureTextEntry={true}   onChange={(event) => this.AuthHandler(event,'password')} ></TextInput>
             <TouchableOpacity style={styles.buttonContainer} onPress={(event)=>this.AuthHandler(event,'submit')}>
                 <Text style={{color:'white',fontWeight:'bold'}}>Sign in</Text>  
@@ -66,8 +71,8 @@ export default class App extends Component {
                 <Text style={{color:'#4280c8',fontWeight:'bold'}}>Sign up</Text>  
               </TouchableOpacity>  
               </View>
-              <Modal isVisible={this.state.isVisible}>
-                  <SignUp isVisibleHandler={this.isModalVisibleHandler}></SignUp>
+              <Modal isVisible={this.state.isVisible}> {/* true of false */}
+                  <SignUp isVisibleHandler={this.isModalVisibleHandler}></SignUp> {/* drilling */}
              </Modal>
      
           </ScrollView>
