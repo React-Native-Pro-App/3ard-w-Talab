@@ -12,11 +12,13 @@ export default class Profile extends Component {
   render() {
     return (
       <View style={styles.container}>
+
           <View style={styles.header}></View>
           <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
-          <View style={styles.body}>
+
             <View style={styles.bodyContent}>
               <Text style={styles.name}>Aseeeeeeeeem</Text>
+
               <Text style={styles.info}> Web designer / Mobile developer</Text>
               <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis,
                omittam deseruisse consequuntur ius an,</Text>
@@ -24,7 +26,6 @@ export default class Profile extends Component {
                 <Text>Submit</Text>  
               </TouchableOpacity>              
             </View>
-        </View>
       </View>
     );
   }
@@ -44,20 +45,20 @@ const styles = StyleSheet.create({
     marginBottom:10,
     alignSelf:'center',
     position: 'absolute',
-    marginTop:130
+    marginTop:130,
   },
   name:{
     fontSize:22,
-    color:"#FFFFFF",
+    // color:"#FFFFFF",
     fontWeight:'600',
   },
-  body:{
-    marginTop:40,
-  },
+
   bodyContent: {
     flex: 1,
     alignItems: 'center',
     padding:30,
+    marginTop:40,
+
   },
   name:{
     fontSize:28,

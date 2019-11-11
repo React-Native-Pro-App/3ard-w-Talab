@@ -24,14 +24,14 @@ export default class App extends Component {
     })
   }
  else if(name === 'submit'){
-    if(this.state.email !== '' && this.state.password !==  ''){
+    // if(this.state.email !== '' && this.state.password !==  ''){
       this.setState({
         isLoggedIn: true
     });
-    }
-    else{
-      alert('something went wrong')
-    }
+    // }
+    // else{
+      // alert('something went wrong')
+    // }
   }
   else{
     this.setState({
