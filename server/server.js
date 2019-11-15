@@ -1,19 +1,18 @@
-const express = require('express')
+/**
+ * Created by Asem Qaffaf
+ * https://github.com/asemqaffaf
+ *
+ * description: this is a micro-service for posts and users 
+ *
+ */
+const express = require('express') // express js
 const cors = require('cors')
-const multer = require('multer')
-// const  cloudinary = require('cloudinary');
-// const cloudinaryStorage = require('multer-storage-cloudinary');
-const db = require('./database')
-
 const app = express()
-const port = 9000
-express(cors)
-
-app.listen(port,()=>console.log(`the server is working on ${port}`))
-
-app.get('/',(request,response)=>{
-    response.json(__dirname)
-})
-app.post('/upload',db.multerUploads,(req,res)=>{
-    console.log(req.body , res.body)
-})
+const port = 9002   // current port
+app.use(cors())   ///middleware for network
+app.use(express.json())  // middleware as well but this will make all responses with json type !
+app.listen(port, () => console.log(`Connected at port ${port}`))
+const userRouter = require('./routes/users')
+app.use('/users/API',userRouter)     //      /users/API/
+const postRouter = require('./routes/posts')
+app.use('/posts/API',postRouter)     //      /posts/API/

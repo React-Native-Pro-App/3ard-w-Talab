@@ -1,0 +1,14 @@
+###################### POSTS ######################
+# GET http://192.168.86.33:9002/posts/API?sellerID=Asem2&postCategories=car&location&name=dunno&q=amman
+# GET http://192.168.86.33:9002/posts/API/getOffers?sellerID=Asem&buyerOffers=buyerOne
+# POST http://192.168.86.33:9002/posts/API/postAdvertisement
+# {		"sellerID": "hello",
+#         "postCategories": "i am new data",
+#         "location":"salt",
+#         "name": "mercedes",
+#         "additionalInfo": "c300",
+#     	"imgUrl": "mercedes pic"}
+
+# GET http://192.168.86.33:9002/posts/API/postOffers?id=2&buyer88=85k
+
+###################### USERS ######################
