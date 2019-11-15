@@ -10,6 +10,35 @@ const cors = require('cors')
 const router = express.Router()
 router.use(cors())   ///middleware for network
 router.use(express.json())  // middleware as well but this will make all responses with json type !
+const postsData = require('../models/postsDatabase')
+router.get('/ASEM',async(request,response)=>{
+    let test = await postsData.find()
+    data = {
+        sellerID: "Asem",
+        postCategories: "car",
+        location: 'Amman',
+        name: "BMW",
+        additionalInfo: '520i',
+        imgUrl: 'https://images.summitmedia-digital.com/topgear/images/2018/07/31/BMW-520d1.jpg',
+        buyerOne: {
+            price: '20k',
+        },
+    }
+    postsData.create(data,  (err, doc)=>{
+        response.json(doc)
+    })
+
+    // await postsData.insertOne(
+    //     data,
+    //  )
+
+    // let test2 = new postsData({
+    //     data
+    // })
+
+    
+})
+
 /*<=====================this path will take the root path======================>*/
 /*<===========================this method to fetch all post data ===========================*/
 router.get('/', async (request, response) => {
