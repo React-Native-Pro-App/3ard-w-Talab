@@ -53,10 +53,12 @@ router.post('/new', async (request, response) => {
         }
         catch (error) {
             response.status(400).json({ message: error.message })
+            // response.status(400).json({  message : 'please use forget my password',rejection : 'email is already exist'   })
         }
     }
     else  {
         response.status(400).json({  message : 'please use forget my password',rejection : 'email is already exist'   })
+
     }
 })
 /*<=========================== End.create new user  func.===========================>*/
