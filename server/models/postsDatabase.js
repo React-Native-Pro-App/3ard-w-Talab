@@ -18,4 +18,4 @@ const postFormSchema = new mongoose.Schema({
     LongTime: { type: String }
 }, { strict: false })
 
-module.exports = mongoose.model('postFormSchema', postFormSchema);
+module.exports = mongoose.model('posts', postFormSchema);

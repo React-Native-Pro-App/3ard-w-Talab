@@ -20,12 +20,14 @@ router.use(express.json())  // middleware as well but this will make all respons
 const postsData = require('../models/postsDatabase')
 
 /*<===========================this method to fetch all post data ===========================*/
-router.get('/data',async (request,response)=>{
-    await getAllData.then((Data)=>{
-        response.status(200).json(Data)
-    })
-    .catch((err)=>response.status(500).json({message: err.message}))
-  })
+router.get('/data', async (request, response) => {
+    try {
+     let data = await postsData.find()
+     response.status(200).json(data)
+    } catch (err) {
+        response.status(500).json({message : err.message})
+    }
+})
 /*<=========================== END.  fetch all   func.===========================>*/
 
 /*<=====================this path will take the root path======================>*/
@@ -103,9 +105,9 @@ router.get('/getOffers', (async (request, response) => {
         await buyerOffers(request.query.buyerOffers)
     )
 })) /// asem@qaffaf.com
-const getAllData = new Promise((resolve, reject) => {
+const getAllData = new Promise(async (resolve, reject) => {
     try {
-        resolve(postsData.find())
+        resolve(await postsData.find())
     }
     catch (err) {
         reject({ message: err.message })
@@ -120,7 +122,7 @@ async function sellerOffers(sellerID) {
                 if (post._doc.sellerID === sellerID) {
                     Object.keys(post._doc).map(key => {
                         if (post._doc[key].price !== undefined) {
-                            arr.push({id : post._id})
+                            arr.push({ id: post._id })
                             arr.push(post._doc.imgUrl)
                             arr.push({ [key]: post._doc[key].price })
                         }
@@ -193,15 +195,15 @@ router.patch('/postOffers', async (request, response) => {
 })
 /*<=========================== END. add new Posts  func.===========================>*/
 /*<=========================== START. DELETE a Post  func.===========================>*/
-router.delete('/:id',async (request,response)=>{
+router.delete('/:id', async (request, response) => {
     try {
-       await postsData.findByIdAndDelete(request.params.id,(err,doc)=>{
-            if(err){response.status(404).json({message:err.message})}
-            else {response.status(202).json({deletion:doc})}
+        await postsData.findByIdAndDelete(request.params.id, (err, doc) => {
+            if (err) { response.status(404).json({ message: err.message }) }
+            else { response.status(202).json({ deletion: doc }) }
         })
     }
-    catch(error){
-        response.status(500).json({message : error.message})
+    catch (error) {
+        response.status(500).json({ message: error.message })
     }
 })
 
