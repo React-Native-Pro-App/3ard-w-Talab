@@ -5,14 +5,14 @@
  * description: this is a micro-service for posts and users 
  *
  */
+require('dotenv').config()
 const express = require('express') // express js
 const cors = require('cors')
 const app = express()
-const port = 9002   // current port
 app.use(cors())   ///middleware for network
 app.use(express.json())  // middleware as well but this will make all responses with json type !
-app.listen(port, () => console.log(`Connected at port ${port}`))
+app.listen(process.env.PORT_NUM, () => console.log(`Connected at port ${process.env.PORT_NUM}`))
 const userRouter = require('./routes/users')
-app.use('/users/API',userRouter)     //      /users/API/
+app.use(process.env.USER_ROUTE_URL,userRouter)     //      /users/API/
 const postRouter = require('./routes/posts')
-app.use('/posts/API',postRouter)     //      /posts/API/
+app.use(process.env.POST_ROUTE_URL,postRouter)     //      /posts/API/

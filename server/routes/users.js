@@ -2,7 +2,7 @@
  * Created by Asem Qaffaf
  * https://github.com/asemqaffaf
  *
- * description: this is a  micro service for posts and services
+ * description: this is a  micro service for users and services
  *
  *  200 OK
  *  201 successfully create an object
@@ -16,9 +16,8 @@ const express = require('express')
 const router = express.Router()
 const userDB = require('./../models/UsersDatabase')
 router.use(express.json())
-
+/*<=========================== START.fetch all users  func.===========================>*/
 router.get('/data', async (request, response) => {
-
     try {
         const users = await userDB.find()
         response.json(users)
@@ -27,7 +26,9 @@ router.get('/data', async (request, response) => {
         response.status(500).json({ message: error.message })
     }
 })
-async function verifyCreateAccount(email) {
+/*<=========================== End.fetch all users  func.===========================>*/
+/*<=========================== START.create new user  func.===========================>*/
+async function verifyToCreateAccount(email) {
     const users = await userDB.find()
     let verified = true
     users.forEach(item => {
@@ -38,13 +39,13 @@ async function verifyCreateAccount(email) {
     return verified
 }
 router.post('/new', async (request, response) => {
-    verifyAccount()
     let { name, email, password } = request.body
-    if (await verifyCreateAccount(email)) {
+    email = email.toLowerCase()
+    if (await verifyToCreateAccount(email)) {
         const user = new userDB({
-            name,
-            email,
-            password
+            name : name.toLowerCase(), 
+            email : email.toLowerCase(),
+            password : password.toLowerCase()
         })
         try {
             const newUser = await user.save()
@@ -54,10 +55,13 @@ router.post('/new', async (request, response) => {
             response.status(400).json({ message: error.message })
         }
     }
-    else {
-        response.status(400).json({ message: 'Bad Request' })
+    else  {
+        response.status(400).json({  message : 'please use forget my password',rejection : 'email is already exist'   })
     }
 })
+/*<=========================== End.create new user  func.===========================>*/
+
+/*<=========================== Start .verify an existence user  func.===========================>*/
 async function verifyAccount(user) {
     const users = await userDB.find()
     let p = new Promise((resolve, reject) => {
@@ -73,7 +77,24 @@ async function verifyAccount(user) {
 
 router.get('/auth', async (request, response) => {
     await verifyAccount(request.query)
-        .then((userId) => response.status(202).json({userID : userId}))
-        .catch((error) => response.status(400).json({message : error}))
+        .then((userId) => response.status(202).json({ userID: userId }))
+        .catch((error) => response.status(400).json({ message: error }))
 })
+/*<=========================== End .verify an existence user  func.===========================>*/
+
+/*<=========================== Start .delete an existence user  func.===========================>*/
+router.delete('/delete/:id', async (request, response) => {
+    try {
+        await userDB.findByIdAndDelete(request.params.id, (err, doc) => {
+            if(err){response.status(400).json({message : err.message})}
+            else {response.status(202).json( { deletion : doc})}
+        })
+    }
+    catch(error) {
+        response.status(500).json({message : error.error})
+    }
+   
+})
+/*<=========================== Start .delete an existence user  func.===========================>*/
+
 module.exports = router
