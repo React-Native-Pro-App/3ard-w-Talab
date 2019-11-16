@@ -18,8 +18,18 @@ const router = express.Router()
 router.use(cors())   ///middleware for network
 router.use(express.json())  // middleware as well but this will make all responses with json type !
 const postsData = require('../models/postsDatabase')
-/*<=====================this path will take the root path======================>*/
+
 /*<===========================this method to fetch all post data ===========================*/
+router.get('/data',async (request,response)=>{
+    await getAllData.then((Data)=>{
+        response.status(200).json(Data)
+    })
+    .catch((err)=>response.status(500).json({message: err.message}))
+  })
+/*<=========================== END.  fetch all   func.===========================>*/
+
+/*<=====================this path will take the root path======================>*/
+/*<===========================this method to search and sort categories all post  ===========================*/
 router.get('/', async (request, response) => {
     var arr = []
     if (Object.keys(request.query).length !== 0) {
@@ -92,7 +102,7 @@ router.get('/getOffers', (async (request, response) => {
         await sellerOffers(request.query.sellerID) :
         await buyerOffers(request.query.buyerOffers)
     )
-}))
+})) /// asem@qaffaf.com
 const getAllData = new Promise((resolve, reject) => {
     try {
         resolve(postsData.find())
@@ -110,6 +120,7 @@ async function sellerOffers(sellerID) {
                 if (post._doc.sellerID === sellerID) {
                     Object.keys(post._doc).map(key => {
                         if (post._doc[key].price !== undefined) {
+                            arr.push({id : post._id})
                             arr.push(post._doc.imgUrl)
                             arr.push({ [key]: post._doc[key].price })
                         }

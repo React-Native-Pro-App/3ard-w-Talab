@@ -5,6 +5,7 @@
  * description: this is a micro-service for posts and users 
  *
  */
+//DATABASE_URL=mongodb://localhost/3ard
 require('dotenv').config()
 const express = require('express') // express js
 const cors = require('cors')
