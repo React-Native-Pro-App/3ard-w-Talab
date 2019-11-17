@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity, Button , AsyncStorage} from "react-native";
+import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import NavigationScreen from "./../NavigationScreen";
 import Modal from "react-native-modal";
 import SignUp from './SignUp'
@@ -32,16 +32,14 @@ export default class App extends Component {
     }
   };
   submitHandler = async () => {
-    axios.get('http://192.168.86.33:9002/users/API/auth', {
+    // axios.get('http://192.168.86.33:9002/users/API/auth', {
+    axios.get('https://aardwtalab.herokuapp.com/users/API/auth', {
       params: {
         email: this.state.email,
         password: this.state.password
       }
     })
       .then(response => {
-        // var jsonOfItem = await AsyncStorage.setItem("_id", JSON.stringify(response));
-        // const retrievedItem =  await AsyncStorage.getItem("_id");
-
         this.setState({
           isLoggedIn: true
         });
