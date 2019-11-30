@@ -8,7 +8,7 @@ export default class Home extends Component {
     posts : []
   }
   componentDidMount() {
-    // axios.get('http://localhost:9002/posts/API/data')   
+
     axios.get('https://ardwtalabapp.herokuapp.com/posts/API/data')
     .then(res=>{
       this.setState({
