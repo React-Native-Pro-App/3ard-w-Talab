@@ -9,7 +9,7 @@ export default class Home extends Component {
   }
   componentDidMount() {
     // axios.get('http://localhost:9002/posts/API/data')   
-    axios.get('https://aardwtalab.herokuapp.com/posts/API/data')
+    axios.get('https://ardwtalabapp.herokuapp.com/posts/API/data')
     .then(res=>{
       this.setState({
         posts : res.data

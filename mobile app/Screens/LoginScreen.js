@@ -1,17 +1,29 @@
 import React, { Component } from "react";
-import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import NavigationScreen from "./../NavigationScreen";
+import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity , AsyncStorage} from "react-native";
 import Modal from "react-native-modal";
 import SignUp from './SignUp'
 import axios from "axios";
-export default class App extends Component {
+
+export default class LoginScreen extends Component {
   state = {
     isLoggedIn: false,
     email: '',
     password: '',
     isVisible: false
   };
+ async componentDidMount  () {
+  let getter = await AsyncStorage.getItem("userId")
+  if(getter != null){
+    this.setState({
+      isLoggedIn : true
+    })
+    this.props.navigation.navigate('tabNavigator')
+
+  }
+  }
+
   AuthHandler = (event, name) => {
+
     const regexEmail = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/
     const regexPassword = /^[0-9a-zA-Z]{8,}$/
     if (name === 'email') {
@@ -31,25 +43,27 @@ export default class App extends Component {
       }
     }
   };
-  submitHandler = async () => {
+  submitHandler = async () => {   
     // axios.get('http://192.168.86.33:9002/users/API/auth', {
-    axios.get('https://aardwtalab.herokuapp.com/users/API/auth', {
+        axios.get('https://ardwtalabapp.herokuapp.com/users/API/auth', {
       params: {
-        email: this.state.email,
+        email: this.state.email.toLowerCase(),
         password: this.state.password
       }
     })
-      .then(response => {
-        this.setState({
-          isLoggedIn: true
+      .then(async(response) => {
+        await AsyncStorage.setItem("userId",response.data.userID)
+         this.setState({
+          isLoggedIn: true,
+          getId: await AsyncStorage.getItem("userId")
         });
       })
       .catch(err => {
         this.setState({
           isLoggedIn: false
         });
-        // alert(err.message)
-        alert('please check your email and password')
+        alert(err.message)
+        // alert('please check your email or password')
       })
   }
 
@@ -60,11 +74,11 @@ export default class App extends Component {
       isLoggedIn: isLoggedIn
     })
   }
-  render() {
+
+  render() {    
     if (this.state.isLoggedIn) {
-      return (
-        <NavigationScreen />
-      )
+      this.props.navigation.navigate('tabNavigator')
+      return null
     } else
       return (
         <>
@@ -95,7 +109,9 @@ export default class App extends Component {
       );
   }
 }
-
+LoginScreen.navigationOptions = {
+  title: '3ard w talab',
+};
 const styles = StyleSheet.create({
   body: {
     marginTop: 60 + '%',

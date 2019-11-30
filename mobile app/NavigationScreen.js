@@ -3,11 +3,15 @@ import {
     createStackNavigator,
     createBottomTabNavigator,
     createAppContainer,
+    createNavigator,
+    createSwitchNavigator
   } from "react-navigation";
+  import {AsyncStorage} from 'react-native'
   import Profile from './Screens/Profile';
   import Home from "./Screens/Home";
   import Offers from './Screens/Offers'
   import CameraScreen from './Screens/CameraScreen'
+  import LoginScreen from './Screens/LoginScreen'
   import { Ionicons , MaterialCommunityIcons} from '@expo/vector-icons';
 
 
@@ -45,15 +49,23 @@ import {
    tabBarLabel : 'Offer',
    tabBarIcon : (prop)=> <MaterialCommunityIcons name='tag' color={prop.tintColor} size={32} ></MaterialCommunityIcons>
   };
+  const loginStack = createStackNavigator({
+    LoginScreen
+  })
+
   const tabNavigator = createBottomTabNavigator({
     HomeStack,
     CameraStack,
     OfferStack,
-    ProfileStack,
+    ProfileStack
+    // LoginStack
   });
-  
 
- 
-  const container = createAppContainer(tabNavigator);
+  const mainNavigator = createSwitchNavigator({
+    // LoginScreen,
+    start: loginStack,
+    tabNavigator
+  })
+  const container = createAppContainer(mainNavigator);
   export default container;
   

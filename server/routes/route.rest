@@ -9,7 +9,7 @@
 #         "additionalInfo": "c200",
 #     	"imgUrl": "https://images.summitmedia-digital.com/topgear/images/2018/07/31/BMW-520d1.jpg"}
 
-# GET http://192.168.86.33:9002/posts/API/postOffers?id=5dcff00c05c23f2186fa8e58&buyer889111=85k
+# PATCH http://192.168.86.33:9002/posts/API/postOffers?id=5dcff00c05c23f2186fa8e58&buyer889111=85k
 # DELETE http://192.168.86.33:9002/posts/API/5dd00484a085e235612f478d
 
 ###################### USERS ######################

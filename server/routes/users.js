@@ -1,9 +1,5 @@
 /**
- * Created by Asem Qaffaf
- * https://github.com/asemqaffaf
- *
  * description: this is a  micro service for users and services
- *
  *  200 OK
  *  201 successfully create an object
     202 Accepted
@@ -20,12 +16,30 @@ router.use(express.json())
 router.get('/data', async (request, response) => {
     try {
         const users = await userDB.find()
-        response.json(users)
+        response.status(200).json(users)
     }
     catch (error) {
         response.status(500).json({ message: error.message })
     }
 })
+/*<=========================== fetch  user by id  ===========================>*/
+router.get('/data/:id', async (request, response) => {
+    try {
+        const users = await userDB.findById(request.params.id,(err,res)=>{
+            if (err){
+            response.status(404).json({ message: error.message })
+            }
+            else{
+                response.json(res)
+            }
+        })
+      
+    }
+    catch (error) {
+        response.status(500).json({ message: error.message })
+    }
+})
+
 /*<=========================== End.fetch all users  func.===========================>*/
 /*<=========================== START.create new user  func.===========================>*/
 async function verifyToCreateAccount(email) {

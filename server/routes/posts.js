@@ -1,13 +1,8 @@
 /**
- * Created by Asem Qaffaf
- * https://github.com/asemqaffaf
- *
  * description: this is a  micro service for posts and services
- *
- * 
  *  200 OK
  *  201 successfully create an object
-    202 Accepted
+    202 Accepted 
     204 No Content
     400 Bad Request
     404 Not Found
@@ -19,13 +14,14 @@ router.use(cors())   ///middleware for network
 router.use(express.json())  // middleware as well but this will make all responses with json type !
 const postsData = require('../models/postsDatabase')
 
+
 /*<===========================this method to fetch all post data ===========================*/
 router.get('/data', async (request, response) => {
     try {
-     let data = await postsData.find()
-     response.status(200).json(data)
+        let data = await postsData.find()
+        response.status(200).json(data)
     } catch (err) {
-        response.status(500).json({message : err.message})
+        response.status(500).json({ message: err.message })
     }
 })
 /*<=========================== END.  fetch all   func.===========================>*/
@@ -36,10 +32,10 @@ router.get('/', async (request, response) => {
     var arr = []
     if (Object.keys(request.query).length !== 0) {
         if (request.query.q !== undefined) {
-            arr.push(await searchFunc(request.query.q))
+            arr = await searchFunc(request.query.q)
         }
         if (request.query.q === undefined) {
-            arr.push(await categoriesFunc(request.query))
+            arr =await categoriesFunc(request.query)
         }
     }
     arr = (arr.length === 0 ? 'no request data found' : arr)
@@ -54,19 +50,8 @@ router.get('/', async (request, response) => {
         BIG n * 4
 */
 async function categoriesFunc(name) {
-    // console.log('name', name) // {postCategories: '' }  {location: ''}name additionalInfo etc.
-    var arr = []
-    await getAllData.then((DATA) => {
-        DATA.map((post) => {
-            Object.keys(post._doc).map(snippet => {
-                if (typeof post._doc[snippet] !== 'object' && post._doc[snippet] !== undefined && name[snippet] !== undefined)
-                    if (post._doc[snippet].toLowerCase().includes(name[snippet].toLowerCase())) {
-                        arr.push(post._doc)
-                    }
-            })
-        })
-    })
-    return arr
+    let Data = await postsData.find(name)
+    return Data
 }
 /*<=========================== END. sort in Category  func.===========================>*/
 /*<=========================== START. search operation has been applied in following func.===========================>*/
@@ -82,7 +67,7 @@ async function searchFunc(target) {
                 Object.values(post._doc).map((nested) => {
                     if (typeof nested === 'string' && nested !== undefined && target !== undefined)
                         if (nested.toLowerCase().includes(target.toLowerCase())) {
-                            console.log(post._doc)
+                            // console.log(post._doc)
                             arr.push(post._doc)
                         }
 
@@ -100,14 +85,15 @@ async function searchFunc(target) {
 /*  params: {sellerID: ''} 
             {buyerOffers: ''}  */
 router.get('/getOffers', (async (request, response) => {
+    console.log(request.query.buyerOffers)
     response.json(request.query.sellerID !== undefined ?
         await sellerOffers(request.query.sellerID) :
         await buyerOffers(request.query.buyerOffers)
     )
 })) /// asem@qaffaf.com
-const getAllData = new Promise(async (resolve, reject) => {
+const getAllData = new Promise((resolve, reject) => {
     try {
-        resolve(await postsData.find())
+        resolve(postsData.find())
     }
     catch (err) {
         reject({ message: err.message })
@@ -208,6 +194,7 @@ router.delete('/:id', async (request, response) => {
 })
 
 /*<=========================== END. DELETE a Post  func.===========================>*/
+
 
 // data = {
 //     sellerID: "Asem",

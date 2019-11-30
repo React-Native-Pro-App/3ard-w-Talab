@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
+
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native';
-
 export default class Profile extends Component {
-
+ logOut =async()=>{
+ await AsyncStorage.removeItem("userId")
+ this.props.navigation.navigate('start')
+}
   render() {
     return (
       <View style={styles.container}>
@@ -22,8 +26,8 @@ export default class Profile extends Component {
               <Text style={styles.info}> Web designer / Mobile developer</Text>
               <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis,
                omittam deseruisse consequuntur ius an,</Text>
-              <TouchableOpacity style={styles.buttonContainer}>
-                <Text>Submit</Text>  
+              <TouchableOpacity style={styles.buttonContainer} onPress={this.logOut}>
+                <Text>log Out</Text>  
               </TouchableOpacity>              
             </View>
       </View>
