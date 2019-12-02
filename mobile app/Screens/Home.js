@@ -1,32 +1,31 @@
-import React, { Component, useState } from 'react'
-import { View, Text, Button, ScrollView, FlatList, ListItem } from 'react-native'
-import axios from 'axios'
+import React, { Component, useState } from "react";
+import {
+  View,
+  Text,
+  Button,
+  Image,
+  ScrollView,
+  FlatList,
+  ListItem,
+  Platform
+} from "react-native";
+import axios from "axios";
 
 export default class Home extends Component {
   state = {
-    boxes : [],
-    posts : []
-  }
+    posts: []
+  };
   componentDidMount() {
-
-    axios.get('https://ardwtalabapp.herokuapp.com/posts/API/data')
-    .then(res=>{
-      this.setState({
-        posts : res.data
+    axios
+      .get("https://ardwtalabapp.herokuapp.com/posts/API/data")
+      .then(res => {
+        this.setState({
+          posts: res.data
+        });
       })
-      console.log(this.state.posts)
-    })
-    .catch(err=>console.log({message: err.message}))
+      .catch(err => console.log({ message: err.message }));
   }
-  addHandler=(event)=>{
-    this.setState({
-      boxes: [
-      ...this.state.boxes ,
-      <View
-        style={{ width: 100, height: 100, backgroundColor: "red", margin: 10 }}
-      ></View>]
-  })
-}
+
   render() {
     return (
       <>
@@ -39,23 +38,20 @@ export default class Home extends Component {
                 flexDirection: "row"
               }}
             >
-              {this.state.boxes.map(item => {
-                // console.log(item);
-                return item;
-              })}
+              {this.state.posts.map(post => (
+                <Image
+                  source={{ uri: post.imgUrl }}
+                  style={{ width: 100, height: 100 }}
+                />
+              ))}
             </View>
-            <Button title="add" onPress={this.addHandler}></Button>
-            {this.state.posts.map(post=>{
-              return <Text>{post.sellerID}</Text>
-            })}
           </ScrollView>
         </View>
       </>
-    )
+    );
   }
 }
 
-
 Home.navigationOptions = {
-  title: 'Home',
+  title: "Home"
 };
