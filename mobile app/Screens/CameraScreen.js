@@ -1,91 +1,128 @@
-import React, { Component } from 'react';
-import { Button, Image, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
-import axios from 'axios'
-import FormData from 'form-data'
+import React, { Component } from "react";
+import { Button, Image, View, Platform, AsyncStorage } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
+import axios from "axios";
+
 export default class ImagePickerExample extends Component {
   state = {
     image: null,
+    uploading: false
   };
 
-  componentDidMount() {
-    this.getPermissionAsync();
-    // console.log('hi');
-  }
+  handleTakePhoto = async () => {
+    console.log("TAKING");
+    const { status: cameraPerm } = await Permissions.askAsync(
+      Permissions.CAMERA
+    );
 
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    if (cameraPerm === "granted" && cameraRollPerm === "granted") {
+      let result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      });
+      this.setState({
+        image: result.uri,
+        uploading: false
+      });
+      this.handleUploadPhoto(result);
     }
-  }
+  };
 
-  _pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1
+  handleChoosePhoto = async () => {
+    console.log("CHOOSING");
+    // const { status: cameraRollPerm } = await Permissions.askAsync(
+    //   Permissions.CAMERA_ROLL
+    // );
+
+    // if (cameraRollPerm === "granted") {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      });
+      this.setState({
+        image: result.uri,
+        uploading: false
+      });
+      this.handleUploadPhoto(result.uri);
+    // }
+  };
+
+  handleUploadPhoto = async image => {
+    await this.setState({
+      uploading: true
     });
 
-    console.log(result);
-    await this.upload(result)
-    if (!result.cancelled) {
-      this.setState({ image: result.uri });
-    }
+    // if (!image.cancelled) {
+    //   console.log("going to server...");
+    //   axios
+    //     .post("http://localhost:5000/posts/API/upload", { image })
+    //     .then(res => {
+    //       this.setState({
+    //         image,
+    //         uploading: false
+    //       });
+    //       alert("upload success");
+    //     })
+    //     .catch(err => {
+    //       this.setState({
+    //         uploading: false
+    //       });
+    //       alert("Upload failed, try again...");
+    //     });
+    // } else {
+    //   this.setState({
+    //     uploading: false
+    //   });
+    //   alert("Upload failed, try again...");
+    // }
   };
-  upload = async (result) => {
-    console.log("ASEM: ", result.uri)
-    var bodyFormData = new FormData();
-    bodyFormData.append('image', "https://upload.wikimedia.org/wikipedia/en/thumb/6/63/IMG_%28business%29.svg/1200px-IMG_%28business%29.svg.png");
 
-    axios({
-      method: 'post',
-      url: 'http://localhost:5000/upload',
-      data: bodyFormData,
-      headers: { 'image': bodyFormData }
-    })
-      .then(function (response) {
-        //handle success
-        console.log(response);
+  handleSubmit = async () => {
+    let imgUrl = this.state.image;
+    let data = {
+      sellerID: await AsyncStorage.getItem("userId"),
+      postCategories: "Shit",
+      location: "Jordan Valley",
+      name: "test",
+      additionalInfo: "best shit ever",
+      imgUrl
+    };
+
+    axios
+      .post("http://localhost:5000/posts/API/postAdvertisement", data)
+      .then(res => {
+        console.log(res.data);
+        this.props.navigation.navigate("Home");
       })
-      .catch(function (response) {
-        //handle error
-        console.log(response);
-      });
-
-   
-    // axios.post('http://localhost:5000/upload', {
-    //   'image' : ""
-    // })
-    // .then(res=>console.log(res.data))
-    // .catch(err=>console.log(err))
-
-    // axios.post("http://localhost:5000/upload",{
-    //     'image': result.uri
-    // })
-    // .then(({data})=>{
-    //   // console.log(data)
-    // })
-    // .catch(err=>console.log(err))
-  }
-
+      .catch(err => console.log(err.message));
+  };
 
   render() {
-    let { image } = this.state;
+    const { image } = this.state;
+    console.log({ uri: image });
+    return image === null ? (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Button title="Choose Photo" onPress={() => this.handleChoosePhoto()} />
+        <Button title="Take Photo" onPress={() => this.handleTakePhoto()} />
+      </View>
+    ) : (
+      <View>
+        {image && (
+          <React.Fragment>
+            <Image
+              source={{ uri: image }}
+              style={{ width: 300, height: 300 }}
+            />
+          </React.Fragment>
+        )}
 
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button
-          title="Pick an image from camera roll"
-          onPress={this._pickImage}
-        />
-        {image &&
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+        <Button title="Submit" onPress={() => this.handleSubmit()} />
       </View>
     );
   }

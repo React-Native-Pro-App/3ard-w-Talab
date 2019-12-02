@@ -195,6 +195,10 @@ router.delete('/:id', async (request, response) => {
 
 /*<=========================== END. DELETE a Post  func.===========================>*/
 
+// router.post('/upload', (req, res) => {
+//     console.log('wait for the whole post to be submitted ...')
+//     console.log(req.body)
+// })
 
 // data = {
 //     sellerID: "Asem",
