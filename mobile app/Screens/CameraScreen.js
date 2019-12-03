@@ -1,129 +1,144 @@
 import React, { Component } from "react";
-import { Button, Image, View, Platform, AsyncStorage } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
 import axios from "axios";
-
-export default class ImagePickerExample extends Component {
+import { storage } from "../config/firebaseConfig";
+import Modal from "react-native-modal";
+import AddPost from "./AddPost";
+export default class FirebaseStorageUploader extends Component {
   state = {
-    image: null,
-    uploading: false
+    url: null,
+    name: null,
+    progress: 0,
+    isVisible: false
   };
 
-  handleTakePhoto = async () => {
-    console.log("TAKING");
-    const { status: cameraPerm } = await Permissions.askAsync(
-      Permissions.CAMERA
-    );
-
-    const { status: cameraRollPerm } = await Permissions.askAsync(
-      Permissions.CAMERA_ROLL
-    );
-
-    if (cameraPerm === "granted" && cameraRollPerm === "granted") {
-      let result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [4, 3]
-      });
-      this.setState({
-        image: result.uri,
-        uploading: false
-      });
-      this.handleUploadPhoto(result);
-    }
-  };
-
-  handleChoosePhoto = async () => {
-    console.log("CHOOSING");
-    // const { status: cameraRollPerm } = await Permissions.askAsync(
-    //   Permissions.CAMERA_ROLL
-    // );
-
-    // if (cameraRollPerm === "granted") {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [4, 3]
-      });
-      this.setState({
-        image: result.uri,
-        uploading: false
-      });
-      this.handleUploadPhoto(result.uri);
-    // }
-  };
-
-  handleUploadPhoto = async image => {
-    await this.setState({
-      uploading: true
+  uriToBlob = uri => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function() {
+        reject(new Error("uriToBlob failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
     });
-
-    // if (!image.cancelled) {
-    //   console.log("going to server...");
-    //   axios
-    //     .post("http://localhost:5000/posts/API/upload", { image })
-    //     .then(res => {
-    //       this.setState({
-    //         image,
-    //         uploading: false
-    //       });
-    //       alert("upload success");
-    //     })
-    //     .catch(err => {
-    //       this.setState({
-    //         uploading: false
-    //       });
-    //       alert("Upload failed, try again...");
-    //     });
-    // } else {
-    //   this.setState({
-    //     uploading: false
-    //   });
-    //   alert("Upload failed, try again...");
-    // }
   };
 
-  handleSubmit = async () => {
-    let imgUrl = this.state.image;
-    let data = {
-      sellerID: await AsyncStorage.getItem("userId"),
-      postCategories: "Shit",
-      location: "Jordan Valley",
-      name: "test",
-      additionalInfo: "best shit ever",
-      imgUrl
-    };
+  uploadToFirebase = async blob => {
+    console.log("UPLOAD");
+    let name = Date.now().toString();
+    this.state.name = name;
 
-    axios
-      .post("http://localhost:5000/posts/API/postAdvertisement", data)
-      .then(res => {
-        console.log(res.data);
-        this.props.navigation.navigate("Home");
+    let status = await storage
+      .ref(`uploads/${name}`)
+      .put(blob, {
+        contentType: "image/jpeg"
       })
-      .catch(err => console.log(err.message));
+      .on(
+        "state_changed",
+        snapshot => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          this.setState({ progress })
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          storage
+            .ref("uploads")
+            .child(name)
+            .getDownloadURL()
+            .then(url => {
+              this.setState({ url, isVisible: true });
+            });
+        }
+      );
+    return status;
+  };
+
+  handleChoose = () => {
+    ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "Images"
+    })
+      .then(result => {
+        if (!result.cancelled) {
+          const { height, width, type, uri } = result;
+          return this.uriToBlob(uri);
+        }
+      })
+      .then(blob => {
+        return this.uploadToFirebase(blob);
+      })
+      .then(snapshot => {
+        console.log("File uploaded");
+      })
+      .then()
+      .catch(error => {
+        throw error;
+      });
+  };
+
+  handleTake = () => {
+    ImagePicker.launchCameraAsync({
+      mediaTypes: "Images"
+    })
+      .then(result => {
+        if (!result.cancelled) {
+          const { height, width, type, uri } = result;
+          return this.uriToBlob(uri);
+        }
+      })
+      .then(blob => {
+        return this.uploadToFirebase(blob);
+      })
+      .then(snapshot => {
+        console.log("File uploaded");
+      })
+      .then()
+      .catch(error => {
+        throw error;
+      });
+  };
+
+  isVisible = condition => {
+    this.setState({ isVisible: condition });
   };
 
   render() {
-    const { image } = this.state;
-    console.log({ uri: image });
-    return image === null ? (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Button title="Choose Photo" onPress={() => this.handleChoosePhoto()} />
-        <Button title="Take Photo" onPress={() => this.handleTakePhoto()} />
-      </View>
-    ) : (
+    return (
       <View>
-        {image && (
-          <React.Fragment>
-            <Image
-              source={{ uri: image }}
-              style={{ width: 300, height: 300 }}
-            />
-          </React.Fragment>
-        )}
+        <Button
+          style={[styles.button]}
+          onPress={this.handleChoose}
+          title="Choose"
+        />
 
-        <Button title="Submit" onPress={() => this.handleSubmit()} />
+        <Button
+          style={[styles.button]}
+          onPress={this.handleTake}
+          title="Take"
+        />
+
+        <Modal isVisible={this.state.isVisible}>
+          <AddPost isVisible={this.isVisible} imgUrl={this.state.url} />
+        </Modal>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#333",
+    textAlign: "center",
+    maxWidth: 150
+  }
+});

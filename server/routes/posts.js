@@ -31,7 +31,7 @@ router.get('/data', async (request, response) => {
 router.get('/', async (request, response) => {
     var arr = []
     if (Object.keys(request.query).length !== 0) {
-        if (request.query.q !== undefined) {
+        if (request.query.q != null) {
             arr = await searchFunc(request.query.q)
         }
         if (request.query.q === undefined) {
@@ -61,11 +61,12 @@ async function categoriesFunc(name) {
 async function searchFunc(target) {
     // console.log('target', target) // {postCategories: '' }  {location: ''}name additionalInfo etc.
     let arr = (target ? [] : 'no data found')
-    await getAllData.then(DATA => {
+    let data = postsData.find()
+    await data.then(DATA => {
         if (target)
             DATA.map((post) => {
                 Object.values(post._doc).map((nested) => {
-                    if (typeof nested === 'string' && nested !== undefined && target !== undefined)
+                    if (typeof nested === 'string' && nested != null && target != null)
                         if (nested.toLowerCase().includes(target.toLowerCase())) {
                             // console.log(post._doc)
                             arr.push(post._doc)
@@ -85,29 +86,21 @@ async function searchFunc(target) {
 /*  params: {sellerID: ''} 
             {buyerOffers: ''}  */
 router.get('/getOffers', (async (request, response) => {
-    console.log(request.query.buyerOffers)
-    response.json(request.query.sellerID !== undefined ?
+    // console.log(request.query.buyerOffers)
+    response.json(request.query.sellerID != null ?
         await sellerOffers(request.query.sellerID) :
         await buyerOffers(request.query.buyerOffers)
     )
 })) /// asem@qaffaf.com
-const getAllData = new Promise((resolve, reject) => {
-    try {
-        resolve(postsData.find())
-    }
-    catch (err) {
-        reject({ message: err.message })
-    }
-
-})
 async function sellerOffers(sellerID) {
-    var arr = [] /// Asem or hello
-    await getAllData.then(DATA => {
+    let arr = [] /// Asem or hello
+    let data = postsData.find()
+    await data.then(DATA => {
         DATA.map((post) => {
-            if (sellerID !== undefined)
+            if (sellerID != null)
                 if (post._doc.sellerID === sellerID) {
                     Object.keys(post._doc).map(key => {
-                        if (post._doc[key].price !== undefined) {
+                        if (post._doc[key].price != null) {
                             arr.push({ id: post._id })
                             arr.push(post._doc.imgUrl)
                             arr.push({ [key]: post._doc[key].price })
@@ -124,9 +117,11 @@ async function sellerOffers(sellerID) {
 }
 async function buyerOffers(buyerName) {
     let arr = [] //buyer889111
-    await getAllData.then((DATA) => {
+    let data = postsData.find()
+    await data.then((DATA) => {
         DATA.map(post => {
-            if (post._doc[buyerName] !== undefined) {
+            if (post._doc[buyerName] != null) {
+                // arr.push({id:post._doc._id,imgUrl:post._doc.imgUrl})
                 arr.push(post._doc.imgUrl)
                 arr.push(post._doc[buyerName])
             }
@@ -143,8 +138,9 @@ async function buyerOffers(buyerName) {
 
 /*<=========================== START.add new Posts API has been applied in following func.===========================>*/
 router.post('/postAdvertisement', async (request, response) => {
+    console.log(request.body)
     let { sellerID, postCategories, location, name, additionalInfo, imgUrl } = request.body
-    if (sellerID !== undefined && postCategories !== undefined && location !== undefined && name !== undefined && additionalInfo !== undefined && imgUrl !== undefined) {
+    if (sellerID != null && postCategories != null && location != null && name!= null&& additionalInfo != null && imgUrl != null) {
         try {
             await postsData.create(request.body, (err, doc) => {
                 if (err) {
@@ -166,7 +162,7 @@ router.patch('/postOffers', async (request, response) => {
     let offerMaker = Object.keys(request.query)[1]
     let offerPrice = request.query[offerMaker]
     // console.log(offerPrice)
-    let newObj = { [offerMaker]: { price: offerPrice, date: Date(Date.now()) } }
+    let newObj = { [offerMaker]: { price: offerPrice, date: Date(Date.now()), status: "pending" } }
     try {
         await postsData.findByIdAndUpdate(id, newObj, (err, doc) => {
             if (err) { response.status(400).json({ message: err.message }) }

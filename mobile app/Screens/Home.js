@@ -38,12 +38,14 @@ export default class Home extends Component {
                 flexDirection: "row"
               }}
             >
-              {this.state.posts.map(post => (
+              {this.state.posts.map(post => 
+              {
+                return (
                 <Image
                   source={{ uri: post.imgUrl }}
                   style={{ width: 100, height: 100 }}
                 />
-              ))}
+              )})}
             </View>
           </ScrollView>
         </View>

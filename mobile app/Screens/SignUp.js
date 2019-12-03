@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, AsyncStorage} from 'react-native'
 import axios from 'axios'
 
 export default class SignUp extends Component {
@@ -37,8 +37,8 @@ export default class SignUp extends Component {
       }
     }
   }
-  submitHandler = () => {
 
+  submitHandler = () => {
     if (this.state.name != '' && this.state.email != '' && this.state.password != '') {
       // axios.post('http://192.168.86.33:9002/users/API/new', {
       axios.post('https://ardwtalabapp.herokuapp.com/users/API/new', {
@@ -47,9 +47,8 @@ export default class SignUp extends Component {
         "email": this.state.email,
         "password": this.state.password
       })
-        .then(response => {
-          // response user id user def
-          console.log(response.data._id)
+        .then(async response => {
+          await AsyncStorage.setItem("userId",response.data._id)
           this.props.isVisibleHandler(false, true)
         })
         .catch(error => {
