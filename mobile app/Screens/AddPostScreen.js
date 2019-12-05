@@ -22,7 +22,6 @@ export default class AddPost extends Component {
 
   componentDidMount = async () => {
     let sellerID = await AsyncStorage.getItem("userId");
-    console.log(sellerID)
     let { imgUrl } = this.props;
     this.setState({ sellerID, imgUrl });
   };
@@ -32,12 +31,14 @@ export default class AddPost extends Component {
   };
 
   submitPost = () => {
-    console.log(this.state);
     axios
-      .post("https://ardwtalabapp.herokuapp.com/posts/API/postAdvertisement", this.state)
+      .post(
+        "https://ardwtalabapp.herokuapp.com/posts/API/postAdvertisement",
+        this.state
+      )
       .then(res => console.log(res.data))
       .catch(err => console.log(err));
-    this.props.isVisible(false);
+       this.props.isVisible(false);
   };
 
   render() {

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
+import * as Permissions from "expo-permissions";
 import { storage } from "../config/firebaseConfig";
 import Modal from "react-native-modal";
-import AddPost from "./AddPost";
+import AddPost from "./AddPostScreen";
 export default class FirebaseStorageUploader extends Component {
   state = {
     url: null,
@@ -44,7 +44,7 @@ export default class FirebaseStorageUploader extends Component {
           const progress = Math.round(
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           );
-          this.setState({ progress })
+          this.setState({ progress });
         },
         error => {
           console.log(error);
@@ -62,68 +62,89 @@ export default class FirebaseStorageUploader extends Component {
     return status;
   };
 
-  handleChoose = () => {
-    ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "Images"
-    })
-      .then(result => {
-        if (!result.cancelled) {
-          const { height, width, type, uri } = result;
-          return this.uriToBlob(uri);
-        }
+  handleChoose = async () => {
+    const { status: cameraPerm } = await Permissions.askAsync(
+      Permissions.CAMERA
+    );
+
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    if (cameraPerm === "granted" && cameraRollPerm === "granted") {
+      ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "Images"
       })
-      .then(blob => {
-        return this.uploadToFirebase(blob);
-      })
-      .then(snapshot => {
-        console.log("File uploaded");
-      })
-      .then()
-      .catch(error => {
-        throw error;
-      });
+        .then(result => {
+          if (!result.cancelled) {
+            const { uri } = result;
+            return this.uriToBlob(uri);
+          }
+        })
+        .then(blob => {
+          return this.uploadToFirebase(blob);
+        })
+        .then(snapshot => {
+          console.log("File uploaded");
+        })
+        .then()
+        .catch(error => {
+          throw error;
+        });
+    }
   };
 
-  handleTake = () => {
-    ImagePicker.launchCameraAsync({
-      mediaTypes: "Images"
-    })
-      .then(result => {
-        if (!result.cancelled) {
-          const { height, width, type, uri } = result;
-          return this.uriToBlob(uri);
-        }
+  handleTake = async () => {
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    if (cameraRollPerm === "granted") {
+      ImagePicker.launchCameraAsync({
+        mediaTypes: "Images"
       })
-      .then(blob => {
-        return this.uploadToFirebase(blob);
-      })
-      .then(snapshot => {
-        console.log("File uploaded");
-      })
-      .then()
-      .catch(error => {
-        throw error;
-      });
+        .then(result => {
+          if (!result.cancelled) {
+            const { height, width, type, uri } = result;
+            return this.uriToBlob(uri);
+          }
+        })
+        .then(blob => {
+          return this.uploadToFirebase(blob);
+        })
+        .then(snapshot => {
+          console.log("File uploaded");
+        })
+        .then()
+        .catch(error => {
+          throw error;
+        });
+    }
   };
 
-  isVisible = condition => {
+  isVisible = (condition) => {
     this.setState({ isVisible: condition });
+    this.props.navigation.navigate("landingStack");
   };
 
   render() {
     return (
-      <View>
-        <Button
-          style={[styles.button]}
-          onPress={this.handleChoose}
-          title="Choose"
-        />
+      <View style={styles.container}>
+        <View>
+          <Button
+            style={styles.button}
+            onPress={this.handleChoose}
+            title="Choose"
+          />
+        </View>
 
-        <Button
-          style={[styles.button]}
-          onPress={this.handleTake}
-          title="Take"
-        />
+        <View>
+          <Button
+            style={styles.button}
+            onPress={this.handleTake}
+            title="Take"
+          />
+        </View>
 
         <Modal isVisible={this.state.isVisible}>
           <AddPost isVisible={this.isVisible} imgUrl={this.state.url} />
@@ -134,11 +155,13 @@ export default class FirebaseStorageUploader extends Component {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#333",
-    textAlign: "center",
-    maxWidth: 150
-  }
+  container: {
+    flex: 1
+  },
+
+  buttonTake: {
+    alignSelf: "baseline"
+  },
+
+  buttonChoose: {}
 });
