@@ -31,15 +31,16 @@ export default class SellerScreen extends Component {
       })
       .catch(err => console.log(err))
   }
-  detailsHandler = (post) => {
-    this.setState({post, isVisible : true})
+  
+  detailsHandler = (post , isVisible) => {
+    this.setState({post, isVisible})
   }
   acceptOfferHandler=(post)=>{
     let {offerMaker , postId} = post
     axios.delete(`https://ardwtalabapp.herokuapp.com/posts/API/deleteAtSpecificTime/${postId}`)
     .then(res=>console.log(res.data))
     .catch(err=>console.log(err.message))
-    .then( axios.put('hhttps://ardwtalabapp.herokuapp.com/posts/API/acceptOffer',{
+    .then( axios.put('https://ardwtalabapp.herokuapp.com/posts/API/acceptOffer',{
         postId ,
         offerMaker
     })
@@ -51,7 +52,7 @@ export default class SellerScreen extends Component {
   }
   deniedOfferHandler=(post)=>{
     let {offerMaker , postId} = post
-    axios.put('http://localhost:5000/posts/API/deleteOffer/',{
+    axios.put('https://ardwtalabapp.herokuapp.com/posts/API/deleteOffer/',{
       postId ,
       offerMaker
     })
@@ -62,15 +63,12 @@ export default class SellerScreen extends Component {
   }
   isVisible = (isVisible) => this.setState({isVisible })
   render() {
-    this.fetchSellerOffers()
+    // this.fetchSellerOffers()
     return (
       <>
         <ScrollView>
           <View style={{ margin: 10 }}>
-              {this.state.offers.map(item => {
-                return (
-                  <View key={this.state.counter++} >
-                    <Modal isVisible={this.state.isVisible}>
+          <Modal isVisible={this.state.isVisible}>
                       <SellerModal 
                       post={this.state.post} 
                       acceptOfferHandler= {this.acceptOfferHandler}
@@ -78,9 +76,12 @@ export default class SellerScreen extends Component {
                       isVisible= {this.isVisible}
                       />
                     </Modal>
-                    <TouchableOpacity onPress={() => { this.detailsHandler(item) }}>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' }}>
                  
+              {this.state.offers.map(item => {
+                return (
+                  <TouchableOpacity key={this.state.counter++} onPress={() => { this.detailsHandler(item, true) }}>
+                  <View  >
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' }}>
                       <View>
                      <Image
                       source={{ uri: 'http://gregfranko.com/images/JavaScript-logo-small.png' }}
@@ -91,8 +92,8 @@ export default class SellerScreen extends Component {
                           </View> 
 
                         </View>
-                        </TouchableOpacity>
                   </View>
+                  </TouchableOpacity>
                 )
               })}
 
